@@ -47,3 +47,6 @@ sudo apt install python3.12-venv
 source venv/bin/activate
 
 source venv/bin/deactivate
+
+# Link atividades
+https://forms.cloud.microsoft/r/j6hG3WtRHi
