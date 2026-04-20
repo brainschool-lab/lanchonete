@@ -7,7 +7,11 @@ router = APIRouter(prefix="/lanchonete/pedidos", tags=["pedidos"])
 def criar(payload: PedidoCreate):
     pedido = service.criar_pedido(payload.cpf, payload.cod_produto, payload.qtd_max_produtos)
     if not pedido:
-        raise HTTPException(status_code=400, detail="CPF ou produto inválido")
+        raise HTTPException(
+            status_code=404,
+            detail="Cliente ou produto não encontrado"
+        )
+
     return PedidoOut(
         codigo=pedido.codigo,
         cpf=pedido.cliente.cpf,
@@ -19,7 +23,10 @@ def criar(payload: PedidoCreate):
 def adicionar_item(cod_pedido: int, payload: PedidoAddItem):
     ok = service.alterar_pedido(cod_pedido, payload.cod_produto)
     if not ok:
-        raise HTTPException(status_code=400, detail="Pedido/produto inválido ou limite excedido")
+        raise HTTPException(
+            status_code=400,
+            detail="Pedido/produto inválido ou limite excedido"
+        )
     return {"ok": True}
 
 @router.post("/{cod_pedido}/finalizar")

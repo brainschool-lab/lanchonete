@@ -6,6 +6,9 @@ from repositories.memory import db
 class LanchoneteService:
     def criar_cliente(self, cpf: str, nome: str = "") -> Cliente:
         #regra simples: se já existe, retorna o mesmo
+        if not cpf.strip():
+            raise ValueError("CPF não pode ser vazio")
+
         if cpf in db.clientes_por_cpf:
             return db.clientes_por_cpf[cpf]
         cliente = Cliente(cpf=cpf, nome=nome)

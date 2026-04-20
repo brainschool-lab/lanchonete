@@ -6,7 +6,10 @@ router = APIRouter(prefix="/clientes", tags=["clientes"])
 
 @router.post("", response_model=ClienteOut)
 def criar(payload: ClienteCreate):
-    cliente = service.criar_cliente(payload.cpf, payload.nome)
+    try:
+        cliente = service.criar_cliente(payload.cpf, payload.nome)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
     return ClienteOut(cpf=cliente.cpf, nome=cliente.nome)
 
 @router.get("/{cpf}", response_model=ClienteOut)
