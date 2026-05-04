@@ -40,7 +40,7 @@ Um pedido já cancelado não deve ser cancelado novamente.
 ## 1. Cancelar Pedido
 
 ```http
-POST /lanchonete/pedidos/{cod_pedido}/cancelar
+PATCH /lanchonete/pedidos/{cod_pedido}/cancelar
 ```
 
 ### Resposta de sucesso
