@@ -1,117 +1,55 @@
-# Lanchonete API
 
-API REST para gerenciamento de clientes, produtos e pedidos de uma lanchonete, construída com **FastAPI** e **Python 3.12**.
+# Lanchonete API - Estácio ADS
 
----
-
-## Requisitos
-
-- Python 3.12
-- pip
+API REST desenvolvida para a disciplina de **Análise e Desenvolvimento de Sistemas (ADS)** na  **Estácio** , focada no gerenciamento de fluxos de uma lanchonete.
 
 ---
 
-## Configuração do ambiente
+## Execução do Projeto
 
-### 1. Criar o ambiente virtual
+Para rodar a API localmente na porta  **8001** , utilize o comando:
 
-```bash
-sudo apt install python3.12-venv   # caso não tenha o módulo venv
-python3 -m venv venv
+**Bash**
+
 ```
-
-### 2. Ativar / desativar o venv
-
-```bash
-source venv/bin/activate    # ativar
-source venv/bin/deactivate  # desativar
-```
-
-### 3. Instalar dependências
-
-```bash
-pip install "fastapi[standard]"
+uvicorn main:app --host 0.0.0.0 --port 8001 --reload
 ```
 
 ---
 
-## Executar o projeto
+## Marcos de Entrega (Releases)
 
-```bash
-fastapi dev main.py
-```
+Este repositório utiliza **Tags Anotadas** para registrar o progresso acadêmico. Cada tag funciona como um "checkpoint" oficial da atividade entregue.
 
----
-
-## Testes
-
-### Instalar dependências de teste
-
-```bash
-pip install pytest httpx
-```
-
-### Rodar os testes
-
-```bash
-pytest -q
-```
+| **Campo**          | **Descrição**                                                    |
+| ------------------------ | ------------------------------------------------------------------------ |
+| **Formato da Tag** | `AAAA.MM.DD-entrega`(Ex:`2026.05.04-entrega`)                        |
+| **Módulo**        | Identifica a funcionalidade trabalhada (ex: Pedidos, Clientes).          |
+| **Status**         | Indica se está**Concluído**ou **Parcial (Em progresso)** . |
+| **Segurança**     | Garante um ponto de restauração fixo para avaliação do professor.    |
 
 ---
 
-## Estrutura do projeto
+## Estrutura do Projeto
 
-```
-main.py
-api/
-    __init__.py
-    routes/
-        __init__.py
-        clientes.py
-        health.py
-        pedidos.py
-        produtos.py
-domain/
-    __init__.py
-    cliente.py
-    pedido.py
-    produto.py
-repositories/
-    __init__.py
-    memory.py
-schemas/
-    __init__.py
-    cliente.py
-    pedido.py
-    produto.py
-services/
-    __init__.py
-    lanchonete_service.py
-tests/
-    conftest.py
-    test_api_clientes.py
-    test_api_pedidos.py
-    test_domain_pedido.py
-    test_domain_produto.py
-```
+A organização segue os princípios de separação de responsabilidades:
+
+| **Diretório** | **Responsabilidade**                                 |
+| -------------------- | ---------------------------------------------------------- |
+| `api/routes/`      | Definição dos endpoints e rotas do FastAPI.              |
+| `domain/`          | Regras de negócio e entidades core do sistema.            |
+| `repositories/`    | Camada de persistência de dados (atualmente em memória). |
+| `schemas/`         | Modelos de validação e serialização (Pydantic).        |
+| `services/`        | Orquestração da lógica entre domínio e repositório.   |
+| `tests/`           | Testes automatizados (Unitários e Integração).          |
 
 ---
 
-## Deploy
+## Tecnologias Utilizadas
 
-### Gerar `requirements.txt`
-
-```bash
-# Com pip
-pip freeze > requirements.txt
-
-# Com poetry
-poetry export -f requirements.txt --output requirements.txt --without-hashes
-```
-
-### Desinstalar todas as bibliotecas
-
-```bash
-pip freeze > uninstall.txt
-pip uninstall -r uninstall.txt -y
-```
+| **Tecnologia**  | **Finalidade**                                      |
+| --------------------- | --------------------------------------------------------- |
+| **Python 3.12** | Linguagem base do projeto.                                |
+| **FastAPI**     | Framework web moderno e de alta performance.              |
+| **Uvicorn**     | Servidor ASGI para execução da API.                     |
+| **Pytest**      | Framework de testes para garantir a qualidade do código. |
