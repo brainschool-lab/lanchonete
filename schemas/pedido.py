@@ -23,3 +23,10 @@ class PedidoOut(BaseModel):
     cpf: str
     esta_entregue: bool
     produtos: List[int]
+    
+class PedidoCanceled(BaseModel):
+    codigo: int
+    cpf: str = ""
+    esta_entregue: bool
+    esta_cancelado: True
+    produtos: List[int]

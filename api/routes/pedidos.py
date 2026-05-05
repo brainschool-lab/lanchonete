@@ -1,5 +1,10 @@
 from fastapi import APIRouter, HTTPException
-from schemas.pedido import PedidoCreate, PedidoAddItem, PedidoOut
+from schemas.pedido import (
+        PedidoCreate, 
+        PedidoAddItem, 
+        PedidoOut,
+        PedidoCanceled
+    )
 from services.lanchonete_service import service
 
 router = APIRouter(prefix="/lanchonete/pedidos", tags=["pedidos"])
@@ -50,6 +55,38 @@ def obter(cod_pedido: int):
     pedido = service.obter_pedido(cod_pedido)
     if not pedido:
         raise HTTPException(status_code=404, detail="Pedido não encontrado")
+    return PedidoOut(
+        codigo=pedido.codigo,
+        cpf=pedido.cliente.cpf,
+        esta_entregue=pedido.esta_entregue,
+        produtos=[p.codigo for p in pedido.listaProdutos],
+    )
+
+#TODO: Incluir Cancela pedido (Retorno:´400´)    
+@router.delete("/{cod_pedido}", response_model=PedidoCanceled)
+def delete_product(cod_pedido: int):
+    delete = service.delete_product(cod_pedido)
+    if not delete:
+        raise HTTPException (
+            status_code=400,
+            detail="Pedido inválido."   
+        )
+
+    return {
+        "status": "OK",
+        "mensagem": "Pedido cancelado com sucesso!"
+    }
+    
+#TODO: Lista pedidos cancelados. (Retorno: 404)
+
+@router.get("/{cod_pedido}", response_model=PedidoCanceled)
+def pedido_canceled(cod_pedido: int):
+    pedido = service.obter_pedido(cod_pedido)
+    if not pedido:
+        raise HTTPException (
+            status_code=404,
+            detail="Os pedidos não foram encontrados."
+        )
     return PedidoOut(
         codigo=pedido.codigo,
         cpf=pedido.cliente.cpf,

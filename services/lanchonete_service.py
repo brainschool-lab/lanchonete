@@ -141,4 +141,12 @@ class LanchoneteService:
         return db.pedidos_por_codigo.get(cod_pedido)
 
 
+
+#NOTE: Pedido cancelado
+    def pedido_canceled(self, cod_pedido: int) -> None:
+        canceled = self.repository.delete(cod_pedido)
+        if not canceled:
+            return ("Mensagem: Vázio" )
+        return canceled.pedido_canceled()
+
 service = LanchoneteService()
