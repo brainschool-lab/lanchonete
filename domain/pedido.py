@@ -13,6 +13,7 @@ class Pedido:
         qtd_max_produtos: Limite máximo de produtos que o pedido pode conter.
         listaProdutos: Lista dos produtos adicionados ao pedido.
         esta_entregue: Indica se o pedido foi finalizado/entregue.
+        observacao: Observação textual sobre o pedido (máx 200 caracteres).
     """
 
     _seq = 1
@@ -27,15 +28,16 @@ class Pedido:
         Raises:
             ValueError: Se qtd_max_produtos for menor ou igual a zero.
         """
+        if int(qtd_max_produtos) <= 0:
+            raise ValueError("Quantidade máxima deve ser maior que zero")
+
         self._codigo = Pedido._seq
         Pedido._seq += 1
         self.cliente = cliente
         self.qtd_max_produtos = int(qtd_max_produtos)
         self.listaProdutos: List[Produto] = []
         self.esta_entregue: bool = False
-
-        if self.qtd_max_produtos <= 0:
-            raise ValueError("Quantidade máxima deve ser maior que zero")
+        self.observacao: str = "" 
 
     @property
     def codigo(self) -> int:
@@ -69,14 +71,27 @@ class Pedido:
         return float(total)
 
     def total_se_finalizado(self) -> float:
-        """Retorna o total do pedido apenas se já estiver finalizado.
-
-        Returns:
-            Total calculado se entregue, 0.0 caso contrário.
-        """
         if not self.esta_entregue:
             return 0.0
         total = 0.0
         for p in self.listaProdutos:
             total += p.preco_final()
         return float(total)
+
+    def adicionar_observacao(self, observacao: str) -> bool:
+        if self.esta_entregue:
+            return False
+
+        if observacao is None:
+            return False
+
+        observacao = observacao.strip()
+
+        if observacao == "":
+            return False
+
+        if len(observacao) > 200:
+            return False
+
+        self.observacao = observacao
+        return True

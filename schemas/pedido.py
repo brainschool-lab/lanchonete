@@ -28,5 +28,12 @@ class PedidoCanceled(BaseModel):
     codigo: int
     cpf: str = ""
     esta_entregue: bool
-    esta_cancelado: True
+    esta_cancelado: bool = True
     produtos: List[int]
+    
+class ObservacaoInput(BaseModel):
+    observacao: str
+
+class ObservacaoOut(BaseModel):
+    codigo: int
+    observacao: str
