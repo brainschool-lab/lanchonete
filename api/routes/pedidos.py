@@ -1,12 +1,5 @@
 from fastapi import APIRouter, HTTPException
-from schemas.pedido import (
-        PedidoCreate, 
-        PedidoAddItem, 
-        PedidoOut,
-        PedidoCanceled,
-        ObservacaoInput, 
-        ObservacaoOut
-    )
+from schemas.pedido import PedidoCreate, PedidoAddItem, PedidoOut, ObservacaoInput, ObservacaoOut
 from services.lanchonete_service import service
 
 router = APIRouter(prefix="/lanchonete/pedidos", tags=["pedidos"])
@@ -26,6 +19,7 @@ def criar(payload: PedidoCreate):
         codigo=pedido.codigo,
         cpf=pedido.cliente.cpf,
         esta_entregue=pedido.esta_entregue,
+        esta_cancelado=pedido.esta_cancelado,
         produtos=[p.codigo for p in pedido.listaProdutos],
     )
 
@@ -51,6 +45,22 @@ def finalizar(cod_pedido: int):
     return {"total": total}
 
 
+@router.get("/cancelados", response_model=list[PedidoOut])
+def listar_pedidos_cancelados():
+    """Lista todos os pedidos cancelados."""
+    pedidos = service.listar_pedidos_cancelados()
+    return [
+        PedidoOut(
+            codigo=p.codigo,
+            cpf=p.cliente.cpf,
+            esta_entregue=p.esta_entregue,
+            esta_cancelado=p.esta_cancelado,
+            produtos=[prod.codigo for prod in p.listaProdutos],
+        )
+        for p in pedidos
+    ]
+
+
 @router.get("/{cod_pedido}", response_model=PedidoOut)
 def obter(cod_pedido: int):
     """Busca um pedido pelo código."""
@@ -61,70 +71,42 @@ def obter(cod_pedido: int):
         codigo=pedido.codigo,
         cpf=pedido.cliente.cpf,
         esta_entregue=pedido.esta_entregue,
+        esta_cancelado=pedido.esta_cancelado,
         produtos=[p.codigo for p in pedido.listaProdutos],
     )
 
-#TODO: Incluir Cancela pedido (Retorno:´400´)    
-@router.delete("/{cod_pedido}", response_model=PedidoCanceled)
-def delete_product(cod_pedido: int):
-    delete = service.delete_product(cod_pedido)
-    if not delete:
-        raise HTTPException (
-            status_code=400,
-            detail="Pedido inválido."   
-        )
 
-    return {
-        "status": "OK",
-        "mensagem": "Pedido cancelado com sucesso!"
-    }
-    
-#TODO: Lista pedidos cancelados. (Retorno: 404)
-
-@router.get("/{cod_pedido}", response_model=PedidoCanceled)
-def pedido_canceled(cod_pedido: int):
-    pedido = service.obter_pedido(cod_pedido)
-    if not pedido:
-        raise HTTPException (
-            status_code=404,
-            detail="Os pedidos não foram encontrados."
-        )
-    return PedidoOut(
-        codigo=pedido.codigo,
-        cpf=pedido.cliente.cpf,
-        esta_entregue=pedido.esta_entregue,
-        produtos=[p.codigo for p in pedido.listaProdutos],
-    )
-    
-@router.post("/{cod_pedido}/observacao")
-def adicionar_observacao(cod_pedido: int, body: ObservacaoInput):
-    resultado = service.adicionar_observacao(
-        cod_pedido,
-        body.observacao
-    )
-
+@router.patch("/{cod_pedido}/cancelar")
+def cancelar_pedido(cod_pedido: int):
+    """Cancela um pedido existente."""
+    resultado = service.cancelar_pedido(cod_pedido)
     if not resultado:
         raise HTTPException(
             status_code=400,
-            detail="Pedido não encontrado ou inválido"
+            detail="Pedido não encontrado ou não pode ser cancelado",
         )
+    return {"ok": True, "mensagem": "Pedido cancelado com sucesso"}
 
-    return {
-        "ok": True,
-        "mensagem": "Observação adicionada com sucesso"
-    }
+
+@router.post("/{cod_pedido}/observacao")
+def adicionar_observacao(cod_pedido: int, body: ObservacaoInput):
+    """Adiciona ou substitui a observação de um pedido."""
+    resultado = service.adicionar_observacao(cod_pedido, body.observacao)
+    if not resultado:
+        raise HTTPException(
+            status_code=400,
+            detail="Pedido não encontrado ou inválido",
+        )
+    return {"ok": True, "mensagem": "Observação adicionada com sucesso"}
+
 
 @router.get("/{cod_pedido}/observacao", response_model=ObservacaoOut)
 def buscar_observacao(cod_pedido: int):
+    """Retorna a observação de um pedido."""
     pedido = service.buscar_observacao_pedido(cod_pedido)
-
     if pedido is None:
-        raise HTTPException(
-            status_code=404,
-            detail="Pedido não encontrado"
-        )
-
+        raise HTTPException(status_code=404, detail="Pedido não encontrado")
     return ObservacaoOut(
         codigo=pedido.codigo,
-        observacao=pedido.observacao
+        observacao=pedido.observacao,
     )
