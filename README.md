@@ -7,6 +7,9 @@ API REST desenvolvida para a disciplina de **Análise e Desenvolvimento de Siste
 
 ## Execução do Projeto
 
+source ~/.venvs/python-developer/bin/activate
+
+
 Para rodar a API localmente na porta  **8001** , utilize o comando:
 
 **Bash**

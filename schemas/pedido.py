@@ -37,3 +37,9 @@ class ObservacaoOut(BaseModel):
 
     codigo: int
     observacao: str
+
+class PedidoFilaOut(BaseModel):
+    codigo: int
+    cpf: str
+    prioritario: bool
+    observacao: str
